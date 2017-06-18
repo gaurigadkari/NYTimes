@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Models;
+package com.example.android.nytimes.models;
 
 /**
  * Created by Gauri Gadkari on 6/15/17.

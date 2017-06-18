@@ -5,13 +5,13 @@
     <item
         android:id="@+id/action_filter"
         android:orderInCategory="100"
-        android:title="Filter"
+        android:title="@string/filter"
         android:icon="@drawable/ic_filter_list_white_48px"
         app:showAsAction="always" />
 
     <item android:id="@+id/action_search"
         android:orderInCategory="5"
-        android:title="Search"
+        android:title="@string/search"
         android:icon="@drawable/ic_search_white_48px"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />

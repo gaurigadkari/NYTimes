@@ -1,7 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.android.nytimes.Fragments.NewsSearchFragment">
+    tools:context="com.example.android.nytimes.fragments.NewsSearchFragment">
 
     <RelativeLayout
         android:id="@+id/searchResultContainer"
@@ -22,6 +21,14 @@
             android:layout_height="match_parent">
 
         </android.support.v7.widget.RecyclerView>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            />
 
     </RelativeLayout>
 

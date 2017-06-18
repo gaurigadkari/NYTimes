@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Utils;
+package com.example.android.nytimes.utils;
 
 /**
  * Created by Gauri Gadkari on 6/15/17.

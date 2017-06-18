@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Activities;
+package com.example.android.nytimes.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

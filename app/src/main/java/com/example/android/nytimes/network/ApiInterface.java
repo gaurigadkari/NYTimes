@@ -1,7 +1,7 @@
-package com.example.android.nytimes.Network;
+package com.example.android.nytimes.network;
 
 import java.util.Map;
-import com.example.android.nytimes.Models.ResponseBody;
+import com.example.android.nytimes.models.ResponseBody;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

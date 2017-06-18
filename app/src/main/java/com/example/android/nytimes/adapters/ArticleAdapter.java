@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Adapters;
+package com.example.android.nytimes.adapters;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,8 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.android.nytimes.Models.Article;
+import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.R;
+import com.example.android.nytimes.utils.Utilities;
 
 import java.util.ArrayList;
 
@@ -65,26 +67,33 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final Article currentArticle = articles.get(position);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_share_white_48dp);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, currentArticle.getWebUrl());
-                PendingIntent pendingIntent = PendingIntent.getActivity(context,
-                        request_code,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_share_white_48dp);
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, currentArticle.getWebUrl());
+                    PendingIntent pendingIntent = PendingIntent.getActivity(context,
+                            request_code,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
 
-                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
-                //builder.addDefaultShareMenuItem();
-                CustomTabsIntent customTabsIntent = builder.build();
-                customTabsIntent.launchUrl(context, Uri.parse(currentArticle.getWebUrl()));
+                    CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                    builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
+                    //builder.addDefaultShareMenuItem();
+                    CustomTabsIntent customTabsIntent = builder.build();
+                    customTabsIntent.launchUrl(context, Uri.parse(currentArticle.getWebUrl()));
+                } else {
+                    Snackbar.make(holder.itemView, "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+                }
+
             }
         });
 

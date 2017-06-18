@@ -1,8 +1,7 @@
-package com.example.android.nytimes.Network;
+package com.example.android.nytimes.network;
 
-import com.example.android.nytimes.Utils.Constants;
+import com.example.android.nytimes.utils.Constants;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

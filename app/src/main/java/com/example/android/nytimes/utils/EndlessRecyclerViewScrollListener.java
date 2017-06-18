@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Utils;
+package com.example.android.nytimes.utils;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;

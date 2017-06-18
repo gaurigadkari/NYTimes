@@ -1,11 +1,10 @@
-package com.example.android.nytimes.Fragments;
+package com.example.android.nytimes.fragments;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -19,16 +18,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.android.nytimes.Adapters.ArticleAdapter;
-import com.example.android.nytimes.Models.Article;
-import com.example.android.nytimes.Models.ResponseBody;
-import com.example.android.nytimes.Network.ApiInterface;
+import com.example.android.nytimes.adapters.ArticleAdapter;
+import com.example.android.nytimes.models.Article;
+import com.example.android.nytimes.models.ResponseBody;
+import com.example.android.nytimes.network.ApiInterface;
 import com.example.android.nytimes.R;
-import com.example.android.nytimes.Utils.Constants;
-import com.example.android.nytimes.Utils.EndlessRecyclerViewScrollListener;
-import com.example.android.nytimes.Utils.Utilities;
+import com.example.android.nytimes.utils.Constants;
+import com.example.android.nytimes.utils.EndlessRecyclerViewScrollListener;
+import com.example.android.nytimes.utils.Utilities;
 import com.example.android.nytimes.databinding.FragmentNewsSearchBinding;
 
 import java.util.ArrayList;
@@ -42,21 +42,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.example.android.nytimes.Utils.Constants.BASE_URL;
-
 
 public class NewsSearchFragment extends Fragment {
-    FragmentNewsSearchBinding binding;
-    private OnFragmentInteractionListener mListener;
+    private FragmentNewsSearchBinding binding;
     private String searchQuery;
-    Context context;
-    ArrayList<Article> articles;
-    ArticleAdapter adapter;
-    RecyclerView newsRecyclerView;
+    private Context context;
+    private ArrayList<Article> articles;
+    private ArticleAdapter adapter;
+    private RecyclerView newsRecyclerView;
     private EndlessRecyclerViewScrollListener scrollListener;
-    public final static String LIST_STATE_KEY = "recycler_list_state";
-    Parcelable listState;
-    StaggeredGridLayoutManager staggeredGridLayoutManager;
+    private StaggeredGridLayoutManager staggeredGridLayoutManager;
+    private ProgressBar progressBar;
+    private Toolbar toolbar;
 
     public NewsSearchFragment() {
 
@@ -65,72 +62,68 @@ public class NewsSearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Indicating the fragment will populate its own menu
         setHasOptionsMenu(true);
+        // Indicating the fragment will retain itself on config changes even if activity is destroyed
         setRetainInstance(true);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_news_search, container, false);
+        // Verifying if a saved instance exists before inflating the fragment
+        if (savedInstanceState == null) {
+            // Inflate the layout for this fragment
+            binding = DataBindingUtil.inflate(inflater, R.layout.fragment_news_search, container, false);
+        }
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Toolbar toolbar = binding.toolbar;
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        newsRecyclerView = binding.newsList;
-        context = getContext();
-        articles = new ArrayList<>();
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        newsRecyclerView.setLayoutManager(staggeredGridLayoutManager);
-        adapter = new ArticleAdapter(getContext(), articles);
-        newsRecyclerView.setAdapter(adapter);
+        // Verifying if a saved instance exists before intializing views and class level variables
+        if (savedInstanceState == null) {
+            toolbar = binding.toolbar;
+            newsRecyclerView = binding.newsList;
+            progressBar = binding.progressBar;
+            articles = new ArrayList<>();
+            //
+            staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            newsRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+            //
+            scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                    loadNextDataFromApi(page);
+                }
+            };
 
-        scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                loadNextDataFromApi(page);
+            newsRecyclerView.addOnScrollListener(scrollListener);
+            if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+                retroNetworkCall("", 0);
+            } else {
+                Snackbar.make(newsRecyclerView, R.string.device_offline, Snackbar.LENGTH_LONG).show();
             }
-        };
-        newsRecyclerView.addOnScrollListener(scrollListener);
-        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
-            retroNetworkCall("", 0);
-        } else {
-            //Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+
         }
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        adapter = new ArticleAdapter(context, articles);
+        newsRecyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
-    }
-
-//    protected void onRestoreInstanceState(Bundle state) {
-//        super.onRestoreInstanceState(state);
-//        // Retrieve list state and list/item positions
-//        if(state != null)
-//            listState = state.getParcelable(LIST_STATE_KEY);
-//    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listState != null) {
-            staggeredGridLayoutManager.onRestoreInstanceState(listState);
-        }
     }
 
     private void loadNextDataFromApi(int page) {
         if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
             retroNetworkCall(searchQuery, page);
         } else {
-            //Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(newsRecyclerView, R.string.device_offline, Snackbar.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) searchItem.getActionView();
@@ -153,43 +146,31 @@ public class NewsSearchFragment extends Fragment {
     }
 
     private void search(String query) {
-        int page = 0;
         if (query.length() == 0) {
-            Toast.makeText(getContext(), "Search text can not be empty", Toast.LENGTH_LONG).show();
+            Snackbar.make(newsRecyclerView, R.string.empty_search, Toast.LENGTH_LONG).show();
         }
         articles.clear();
-        //networkCall(query, page);
-        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
-            retroNetworkCall(query, page);
-        } else {
-            //Snackbar.make(findViewById(R.id.searchActivity), "Make sure your device is connected to the internet", Snackbar.LENGTH_LONG).show();
-        }
     }
 
+    /**
+     * Changing the activity reference for the retained fragment as the activity is getting recreated
+     *
+     * @param context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         this.context = getActivity();
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
+    /**
+     * Clearing activity's old reference
+     */
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
         this.context = null;
     }
-
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
-
 
     public void retroNetworkCall(String query, final int page) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -202,7 +183,7 @@ public class NewsSearchFragment extends Fragment {
 //        }
         params.put("api-key", "d31fe793adf546658bd67e2b6a7fd11a");
         params.put("page", page + "");
-        if (query != "") {
+        if (!query.equals("")) {
             params.put("q", query);
         } else {
             searchQuery = "";
@@ -214,12 +195,14 @@ public class NewsSearchFragment extends Fragment {
 
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
         Call<ResponseBody> call = apiInterface.getSearchResultsWithFilter(params);
+        showProgressBar();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                hideProgressBar();
                 Log.d("DEBUG", response.toString());
-                if(response.body() != null){
-                    if(response.body().getStatus().equals("OK")) {
+                if (response.body() != null) {
+                    if (response.body().getStatus().equals("OK")) {
                         List<Article> responseArticles = response.body().getResponse().getArticles();
                         if (responseArticles.size() != 0) {
                             articles.addAll(responseArticles);
@@ -231,9 +214,17 @@ public class NewsSearchFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                hideProgressBar();
             }
         });
+    }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
     }
 
 }

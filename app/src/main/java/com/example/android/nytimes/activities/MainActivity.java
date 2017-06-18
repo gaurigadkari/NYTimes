@@ -1,21 +1,13 @@
-package com.example.android.nytimes.Activities;
+package com.example.android.nytimes.activities;
 
-import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import com.example.android.nytimes.Fragments.NewsSearchFragment;
+import com.example.android.nytimes.fragments.NewsSearchFragment;
 import com.example.android.nytimes.R;
 import com.example.android.nytimes.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
@@ -33,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
             searchFragment = new NewsSearchFragment();
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.fragmentContainer, searchFragment)
+                    .add(R.id.fragmentContainer, searchFragment, SEARCH_FRAGMENT)
                     .commit();
         }
 

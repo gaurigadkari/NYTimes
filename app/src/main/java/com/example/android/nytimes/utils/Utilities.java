@@ -1,4 +1,4 @@
-package com.example.android.nytimes.Utils;
+package com.example.android.nytimes.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
