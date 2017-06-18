@@ -12,6 +12,10 @@ import retrofit2.http.QueryMap;
  * Created by Gauri Gadkari on 6/15/17.
  */
 
-public class ApiInterface {
+public interface ApiInterface {
+    @GET("articlesearch.json")
+    Call<ResponseBody> getSearchResults(@Query("api-key") String apiKey, @Query("q") String query, @Query("page") int page);
 
+    @GET("articlesearch.json")
+    Call<ResponseBody> getSearchResultsWithFilter(@QueryMap Map<String, String> options);
 }
