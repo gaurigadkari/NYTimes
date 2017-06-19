@@ -7,4 +7,10 @@
     <string name="misc">Misc</string>
     <string name="error_429">Too many network requests</string>
     <string name="toggle_list_and_grid">Toggle list and grid</string>
+    <string name="home">Home</string>
+    <string name="financial">Financial</string>
+    <string name="technology">Technology</string>
+    <string name="sports">Sports</string>
+    <string name="foreign">Foreign</string>
+    <string name="politics">Politics</string>
 </resources>
