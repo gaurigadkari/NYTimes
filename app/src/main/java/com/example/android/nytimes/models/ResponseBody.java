@@ -22,7 +22,4 @@ public class ResponseBody {
         return status;
     }
 
-    public void setResponse(Response response) {
-        this.response = response;
-    }
 }

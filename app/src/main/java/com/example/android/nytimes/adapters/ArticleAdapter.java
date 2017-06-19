@@ -21,12 +21,7 @@ import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.R;
 import com.example.android.nytimes.utils.Utilities;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.example.android.nytimes.R.layout.article;
 

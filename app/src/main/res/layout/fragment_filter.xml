@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/checkbox_art"
-            android:text="@string/fashion_and_Style" />
+            android:text="@string/fashion" />
 
         <CheckBox
             android:id="@+id/checkbox_sports"

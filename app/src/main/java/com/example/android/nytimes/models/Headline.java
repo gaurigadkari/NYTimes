@@ -32,34 +32,18 @@ public class Headline {
         return main;
     }
 
-    public void setMain(String main) {
-        this.main = main;
-    }
-
     public String getPrintHeadline() {
         return printHeadline;
-    }
-
-    public void setPrintHeadline(String printHeadline) {
-        this.printHeadline = printHeadline;
     }
 
     public String getKicker() {
         return kicker;
     }
 
-    public void setKicker(String kicker) {
-        this.kicker = kicker;
-    }
-
     public String getContentKicker() {
         return contentKicker;
     }
-
-    public void setContentKicker(String contentKicker) {
-        this.contentKicker = contentKicker;
-    }
-
+    
 }
 
 

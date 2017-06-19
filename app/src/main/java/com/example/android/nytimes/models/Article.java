@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
-import java.util.Date;
 import java.util.List;
 
 @Parcel
@@ -48,17 +47,8 @@ public class Article {
         return headline;
     }
 
-
-    public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
-    }
-
     public List<Multimedium> getMultimedia() {
         return multimedia;
-    }
-
-    public void setMultimedia(List<Multimedium> multimedia) {
-        this.multimedia = multimedia;
     }
 
     public String getTag() {

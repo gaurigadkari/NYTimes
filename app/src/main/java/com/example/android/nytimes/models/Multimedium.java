@@ -46,16 +46,8 @@ public class Multimedium {
         return "http://www.nytimes.com/"+url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public int getRank() {
         return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
     }
 
     public int getHeight() {
@@ -70,16 +62,8 @@ public class Multimedium {
         return subtype;
     }
 
-    public void setSubtype(String subtype) {
-        this.subtype = subtype;
-    }
-
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
 }

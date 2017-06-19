@@ -65,7 +65,7 @@ public class FilterFragment extends DialogFragment {
         editor.putBoolean(SharedPref.SPORTS, chkSports.isChecked());
         editor.putBoolean(SharedPref.HEALTH, chkHealth.isChecked());
         editor.putBoolean(SharedPref.EDUCATION, chkEducation.isChecked());
-        editor.commit();
+        editor.apply();
     }
 
     private void setupFilters() {
