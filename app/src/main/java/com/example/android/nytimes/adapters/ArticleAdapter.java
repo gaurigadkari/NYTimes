@@ -21,7 +21,12 @@ import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.R;
 import com.example.android.nytimes.utils.Utilities;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.example.android.nytimes.R.layout.article;
 
@@ -83,7 +88,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             request_code,
                             intent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
-
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                     builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
                     builder.setActionButton(bitmap, "Share Link", pendingIntent, true);
@@ -96,23 +100,46 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             }
         });
+        //DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
         switch (holder.getItemViewType()) {
+
             case articleWithImage:
                 ArticleViewHolder holderImage = (ArticleViewHolder) holder;
-
                 Glide.clear(holderImage.thumbNail);
                 holderImage.thumbNail.setImageResource(0);
                 String imageUrl = currentArticle.getMultimedia().get(0).getUrl();
-
-                holderImage.thumbNail.setImageURI(Uri.parse("http://www.nytimes.com/images/2017/02/12/arts/12KIDMAN/12KIDMAN-thumbWide-v2.jpg"));
                 Glide.with(context).load(imageUrl).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(holderImage.thumbNail);
                 holderImage.headline.setText(currentArticle.getHeadline().getMain());
+                holderImage.snippet.setText(currentArticle.getSnippet());
+//                try {
+//                    Date parsed = sdf.parse(currentArticle.getPublishDate());
+//                    holderImage.date.setText(new SimpleDateFormat("EEE, MMM d yyyy", Locale.US).format(parsed));
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+                if (!currentArticle.getTag().equals("")) {
+                    holderImage.tag.setText(currentArticle.getTag());
+                } else {
+                    holderImage.tag.setText(R.string.misc);
+                }
                 break;
             case articleWithoutImage:
                 ArticleNoImageViewHolder holderNoImage = (ArticleNoImageViewHolder) holder;
+
                 holderNoImage.headline.setText(currentArticle.getHeadline().getMain());
                 holderNoImage.snippet.setText(currentArticle.getSnippet());
+//                try {
+//                    Date parsed = sdf.parse(currentArticle.getPublishDate());
+//                    holderNoImage.date.setText(new SimpleDateFormat("MMM d yyyy", Locale.US).format(parsed));
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+                if (!currentArticle.getTag().equals("")) {
+                    holderNoImage.tag.setText(currentArticle.getTag());
+                } else {
+                    holderNoImage.tag.setText(R.string.misc);
+                }
                 break;
 
         }
@@ -127,25 +154,29 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     public static class ArticleViewHolder extends RecyclerView.ViewHolder {
-        protected TextView headline;
+        protected TextView headline, snippet, date, tag;
         protected ImageView thumbNail;
 
         public ArticleViewHolder(View itemView) {
             super(itemView);
             headline = (TextView) itemView.findViewById(R.id.headline);
             thumbNail = (ImageView) itemView.findViewById(R.id.thumbnail);
-
+            snippet = (TextView) itemView.findViewById(R.id.snippet);
+            date = (TextView) itemView.findViewById(R.id.date);
+            tag = (TextView) itemView.findViewById(R.id.tag);
         }
     }
 
     public static class ArticleNoImageViewHolder extends RecyclerView.ViewHolder {
-        protected TextView headline;
-        protected TextView snippet;
+        protected TextView headline, snippet, date, tag;
 
         public ArticleNoImageViewHolder(View itemView) {
             super(itemView);
             headline = (TextView) itemView.findViewById(R.id.headline);
             snippet = (TextView) itemView.findViewById(R.id.snippet);
+            date = (TextView) itemView.findViewById(R.id.date);
+            tag = (TextView) itemView.findViewById(R.id.tag);
+
 
         }
     }

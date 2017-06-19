@@ -51,12 +51,12 @@ public class NewsSearchFragment extends Fragment {
     private ArticleAdapter adapter;
     private RecyclerView newsRecyclerView;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private StaggeredGridLayoutManager staggeredGridLayoutManager;
+    private StaggeredGridLayoutManager listGridLayoutManager;
     private ProgressBar progressBar;
     private Toolbar toolbar;
-
+    private final int GRID_LAYOUT = 0, LIST_LAYOUT = 1;
+    private int currentLayoutType = GRID_LAYOUT;
     public NewsSearchFragment() {
-
     }
 
     @Override
@@ -88,16 +88,7 @@ public class NewsSearchFragment extends Fragment {
             progressBar = binding.progressBar;
             articles = new ArrayList<>();
             //
-            staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-            //linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            newsRecyclerView.setLayoutManager(staggeredGridLayoutManager);
-            //
-            scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
-                @Override
-                public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                    loadNextDataFromApi(page);
-                }
-            };
+            setLayoutManager(GRID_LAYOUT);
 
             newsRecyclerView.addOnScrollListener(scrollListener);
             if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
@@ -111,6 +102,21 @@ public class NewsSearchFragment extends Fragment {
         adapter = new ArticleAdapter(context, articles);
         newsRecyclerView.setAdapter(adapter);
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    private void setLayoutManager(int layoutType) {
+        if(layoutType == GRID_LAYOUT) {
+            listGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        } else if (layoutType == LIST_LAYOUT) {
+            listGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
+        }
+        newsRecyclerView.setLayoutManager(listGridLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(listGridLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadNextDataFromApi(page);
+            }
+        };
     }
 
     private void loadNextDataFromApi(int page) {
@@ -145,11 +151,34 @@ public class NewsSearchFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.listView:
+                if(currentLayoutType == GRID_LAYOUT) {
+                    setLayoutManager(LIST_LAYOUT);
+                    item.setIcon(R.drawable.ic_view_module_white_48px);
+                    currentLayoutType = LIST_LAYOUT;
+                } else if(currentLayoutType == LIST_LAYOUT) {
+                    setLayoutManager(GRID_LAYOUT);
+                    item.setIcon(R.drawable.ic_list_white_48px);
+                    currentLayoutType = GRID_LAYOUT;
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void search(String query) {
         if (query.length() == 0) {
             Snackbar.make(newsRecyclerView, R.string.empty_search, Toast.LENGTH_LONG).show();
         }
         articles.clear();
+        if (Utilities.isNetworkAvailable(context) && Utilities.isOnline()) {
+            retroNetworkCall(query, 0);
+        } else {
+            Snackbar.make(newsRecyclerView, R.string.device_offline, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -201,7 +230,10 @@ public class NewsSearchFragment extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 hideProgressBar();
                 Log.d("DEBUG", response.toString());
-                if (response.body() != null) {
+                if(response.code() == 429) {
+                    Snackbar.make(newsRecyclerView, R.string.error_429, Snackbar.LENGTH_LONG).show();
+                } else if (response.body() != null) {
+
                     if (response.body().getStatus().equals("OK")) {
                         List<Article> responseArticles = response.body().getResponse().getArticles();
                         if (responseArticles.size() != 0) {
