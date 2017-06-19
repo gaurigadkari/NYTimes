@@ -29,7 +29,7 @@ import com.example.android.nytimes.databinding.FragmentNewsSearchBinding;
 import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.models.ResponseBody;
 import com.example.android.nytimes.network.ApiInterface;
-import com.example.android.nytimes.utils.Constants;
+import com.example.android.nytimes.network.RetrofitClient;
 import com.example.android.nytimes.utils.EndlessRecyclerViewScrollListener;
 import com.example.android.nytimes.utils.Utilities;
 
@@ -209,7 +209,6 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
     }
 
     public void retroNetworkCall(String query, final int page) {
-//        final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
         SharedPreferences sharedPreferences = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean", false);
         Boolean art = sharedPreferences.getBoolean("art", false);
@@ -235,15 +234,11 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
         }
         newsDesk = newsDesk + ")";
         String sortString;
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
         Map<String, String> params = new HashMap<>();
         if (newsDeskBoolean) {
             params.put("fq", newsDesk);
         }
-        params.put("api-key", "d31fe793adf546658bd67e2b6a7fd11a");
+        params.put(RetrofitClient.API_KEY, RetrofitClient.API_KEY_VALUE);
         params.put("page", page + "");
         if (!query.equals("")) {
             params.put("q", query);
@@ -251,8 +246,8 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
             searchQuery = "";
         }
 
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ResponseBody> call = apiInterface.getSearchResultsWithFilter(params);
+
+        Call<ResponseBody> call = RetrofitClient.getInstance().getApiInterface().getSearchResultsWithFilter(params);
         showProgressBar();
         call.enqueue(new Callback<ResponseBody>() {
             @Override
