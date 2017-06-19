@@ -6,19 +6,19 @@
 
 The following **required** functionality is completed:
 
-* [x]The app has 2 screens defined below.
+The app has 2 screens defined below.
 **Home Screen:**
-    * [x] Allows the user to enter a search term and displays the results in either a list or grid view.
-    * [x] Use the ActionBar SearchView or custom layout as the query box instead of an EditText.
-    * [x] Results should display:
-    * [x] Article thumbnail
-    * [x] Article headline
-    * [x] Selecting an item in search results should open the detail screen.
-    * [x] Should have pagination of results
+ * [x] Allows the user to enter a search term and displays the results in either a list or grid view.
+ * [x] Use the ActionBar SearchView or custom layout as the query box instead of an EditText.
+ * [x] Results should display:
+ * [x] Article thumbnail
+ * [x] Article headline
+ * [x] Selecting an item in search results should open the detail screen.
+ * [x] Should have pagination of results
 
 **Detail Screen:**
-    * [x] Displays a detailed view of article.
-    * [x] User can share a link to their friends or email it to themselves
+* [x] Displays a detailed view of article.
+* [x] User can share a link to their friends or email it to themselves
 
 * [x] Robust error handling, check if internet is available, handle error cases, network failures.
 
