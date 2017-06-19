@@ -33,7 +33,8 @@ The following **additional** features are implemented:
 * [x] Leverages the data binding support module
 * [x] Added placeholder images for news items. 
 * [x] Added a Splash screen.
-* [x] Fixed crashes and handled no response and error response from server.
+* [x] Handled orientation change
+* [x] Fixed crashes and handled no response and error response from server
 
 ## Notes
 
