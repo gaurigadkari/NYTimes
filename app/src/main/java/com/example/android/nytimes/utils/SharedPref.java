@@ -29,19 +29,19 @@ public class SharedPref {
 
         newsDesk.append("news_desk:(");
         if (art) {
-            newsDesk.append("\"" + R.string.art + "\" ");
+            newsDesk.append("\"Art\" ");
         }
         if (fashion) {
-            newsDesk.append("\"" + R.string.fashion + "\" ");
+            newsDesk.append("\"Fashion\" ");
         }
         if (sports) {
-            newsDesk.append("\"" + R.string.sports + "\" ");
+            newsDesk.append("\"Sports\" ");
         }
         if (education) {
-            newsDesk.append("\"" + R.string.education + "\" ");
+            newsDesk.append("\"Education\" ");
         }
         if (health) {
-            newsDesk.append("\"" + R.string.health + "\" ");
+            newsDesk.append("\"Health\" ");
         }
         newsDesk.append(")");
         return newsDesk.toString();
