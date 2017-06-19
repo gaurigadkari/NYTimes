@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by Gauri Gadkari on 6/15/17.
- */
-
 public class Response {
 
     @SerializedName("docs")

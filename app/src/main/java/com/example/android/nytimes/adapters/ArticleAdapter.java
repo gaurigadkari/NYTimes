@@ -25,15 +25,11 @@ import java.util.ArrayList;
 
 import static com.example.android.nytimes.R.layout.article;
 
-/**
- * Created by Gauri Gadkari on 6/16/17.
- */
-
 public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Article> articles;
     Context context;
-    private final int articleWithImage = 0, articleWithoutImage = 1;
-    int request_code = 100;
+    private final int ARTICLE_WITH_IMAGE = 0, ARTICLE_WITHOUT_IMAGE = 1;
+    private final int REQUEST_CODE = 100;
 
     public ArticleAdapter(Context context, ArrayList<Article> articles) {
         this.context = context;
@@ -51,14 +47,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         LayoutInflater inflater = LayoutInflater.from(context);
 
         switch (viewType) {
-            case articleWithImage:
-                View view1 = inflater.inflate(article, parent, false);
-                viewHolder = new ArticleViewHolder(view1);
+            case ARTICLE_WITH_IMAGE:
+                View articleWithImageview = inflater.inflate(article, parent, false);
+                viewHolder = new ArticleViewHolder(articleWithImageview);
 
                 break;
-            case articleWithoutImage:
-                View view2 = inflater.inflate(R.layout.article_without_image, parent, false);
-                viewHolder = new ArticleNoImageViewHolder(view2);
+            case ARTICLE_WITHOUT_IMAGE:
+                View articleWithoutImageview = inflater.inflate(R.layout.article_without_image, parent, false);
+                viewHolder = new ArticleNoImageViewHolder(articleWithoutImageview);
 
 
         }
@@ -80,7 +76,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, currentArticle.getWebUrl());
                     PendingIntent pendingIntent = PendingIntent.getActivity(context,
-                            request_code,
+                            REQUEST_CODE,
                             intent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
                     CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -99,7 +95,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         switch (holder.getItemViewType()) {
 
-            case articleWithImage:
+            case ARTICLE_WITH_IMAGE:
                 ArticleViewHolder holderImage = (ArticleViewHolder) holder;
                 Glide.clear(holderImage.thumbNail);
                 holderImage.thumbNail.setImageResource(0);
@@ -107,29 +103,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 Glide.with(context).load(imageUrl).placeholder(R.drawable.placeholder).error(R.drawable.placeholder).into(holderImage.thumbNail);
                 holderImage.headline.setText(currentArticle.getHeadline().getMain());
                 holderImage.snippet.setText(currentArticle.getSnippet());
-//                try {
-//                    Date parsed = sdf.parse(currentArticle.getPublishDate());
-//                    holderImage.date.setText(new SimpleDateFormat("EEE, MMM d yyyy", Locale.US).format(parsed));
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
                 if (!currentArticle.getTag().equals("")) {
                     holderImage.tag.setText(currentArticle.getTag());
                 } else {
                     holderImage.tag.setText(R.string.misc);
                 }
                 break;
-            case articleWithoutImage:
+            case ARTICLE_WITHOUT_IMAGE:
                 ArticleNoImageViewHolder holderNoImage = (ArticleNoImageViewHolder) holder;
 
                 holderNoImage.headline.setText(currentArticle.getHeadline().getMain());
                 holderNoImage.snippet.setText(currentArticle.getSnippet());
-//                try {
-//                    Date parsed = sdf.parse(currentArticle.getPublishDate());
-//                    holderNoImage.date.setText(new SimpleDateFormat("MMM d yyyy", Locale.US).format(parsed));
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
                 if (currentArticle.getTag() != null && !currentArticle.getTag().equals("")) {
                     holderNoImage.tag.setText(currentArticle.getTag());
                 } else {

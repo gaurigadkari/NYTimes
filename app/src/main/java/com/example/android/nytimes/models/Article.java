@@ -1,9 +1,5 @@
 package com.example.android.nytimes.models;
 
-/**
- * Created by Gauri Gadkari on 6/15/17.
- */
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

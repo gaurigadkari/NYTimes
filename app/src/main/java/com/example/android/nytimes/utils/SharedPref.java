@@ -5,10 +5,6 @@ import android.content.SharedPreferences;
 
 import com.example.android.nytimes.R;
 
-/**
- * Created by Gauri Gadkari on 6/19/17.
- */
-
 public class SharedPref {
     public static final String PREFERENCES_FILENAME = "preferences";
     public static final String ART = "art";

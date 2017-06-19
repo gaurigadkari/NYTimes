@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
-/**
- * Created by Gauri Gadkari on 6/15/17.
- */
-
 @Parcel
 public class Headline {
 
@@ -43,7 +39,7 @@ public class Headline {
     public String getContentKicker() {
         return contentKicker;
     }
-    
+
 }
 
 

@@ -6,10 +6,6 @@ import android.net.NetworkInfo;
 
 import java.io.IOException;
 
-/**
- * Created by Gauri Gadkari on 6/16/17.
- */
-
 public class Utilities {
     public static Boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager

@@ -3,10 +3,6 @@ package com.example.android.nytimes.network;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Gauri Gadkari on 6/15/17.
- */
-
 public class RetrofitClient {
     private static RetrofitClient instance = null;
     public static final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";

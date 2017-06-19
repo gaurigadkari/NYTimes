@@ -3,10 +3,6 @@ package com.example.android.nytimes.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by Gauri Gadkari on 6/15/17.
- */
-
 public class ResponseBody {
     @SerializedName("response")
     @Expose
