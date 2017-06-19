@@ -28,9 +28,9 @@ import com.example.android.nytimes.adapters.ArticleAdapter;
 import com.example.android.nytimes.databinding.FragmentNewsSearchBinding;
 import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.models.ResponseBody;
-import com.example.android.nytimes.network.ApiInterface;
 import com.example.android.nytimes.network.RetrofitClient;
 import com.example.android.nytimes.utils.EndlessRecyclerViewScrollListener;
+import com.example.android.nytimes.utils.SharedPref;
 import com.example.android.nytimes.utils.Utilities;
 
 import java.util.ArrayList;
@@ -41,11 +41,9 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class NewsSearchFragment extends Fragment implements FilterFragment.FilterSubmit{
+public class NewsSearchFragment extends Fragment implements FilterFragment.FilterSubmit {
     private FragmentNewsSearchBinding binding;
     private String searchQuery;
     private Context context;
@@ -59,6 +57,7 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
     private final int GRID_LAYOUT = 0, LIST_LAYOUT = 1;
     private int currentLayoutType = GRID_LAYOUT;
     private final String FRAGMENT_FILTER_TAG = "Filters";
+
     public NewsSearchFragment() {
     }
 
@@ -107,7 +106,7 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
     }
 
     private void setLayoutManager(int layoutType) {
-        if(layoutType == GRID_LAYOUT) {
+        if (layoutType == GRID_LAYOUT) {
             listGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         } else if (layoutType == LIST_LAYOUT) {
             listGridLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);
@@ -162,11 +161,11 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
                 filterFragment.show(fm, FRAGMENT_FILTER_TAG);
                 break;
             case R.id.action_list:
-                if(currentLayoutType == GRID_LAYOUT) {
+                if (currentLayoutType == GRID_LAYOUT) {
                     setLayoutManager(LIST_LAYOUT);
                     item.setIcon(R.drawable.ic_view_module_white_48px);
                     currentLayoutType = LIST_LAYOUT;
-                } else if(currentLayoutType == LIST_LAYOUT) {
+                } else if (currentLayoutType == LIST_LAYOUT) {
                     setLayoutManager(GRID_LAYOUT);
                     item.setIcon(R.drawable.ic_list_white_48px);
                     currentLayoutType = GRID_LAYOUT;
@@ -209,43 +208,25 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
     }
 
     public void retroNetworkCall(String query, final int page) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean", false);
-        Boolean art = sharedPreferences.getBoolean("art", false);
-        Boolean fashion = sharedPreferences.getBoolean("fashion", false);
-        Boolean sports = sharedPreferences.getBoolean("sports", false);
-        Boolean education = sharedPreferences.getBoolean("education", false);
-        Boolean health = sharedPreferences.getBoolean("health", false);
-        String newsDesk = "news_desk:(";
-        if (art) {
-            newsDesk = newsDesk + "\"Art\" ";
-        }
-        if (fashion) {
-            newsDesk = newsDesk + "\"Fashion\" ";
-        }
-        if (sports) {
-            newsDesk = newsDesk + "\"Sports\" ";
-        }
-        if (education){
-            newsDesk = newsDesk + "\"Education\" ";
-        }
-        if (health){
-            newsDesk = newsDesk + "\"Health\" ";
-        }
-        newsDesk = newsDesk + ")";
-        String sortString;
+        Context context = getActivity();
+        Boolean newsDeskBoolean = SharedPref.getBoolean(context, SharedPref.NEWS_DESK_BOOLEAN);
+        Boolean art = SharedPref.getBoolean(context, SharedPref.ART);
+        Boolean fashion = SharedPref.getBoolean(context, SharedPref.FASHION);
+        Boolean sports = SharedPref.getBoolean(context, SharedPref.SPORTS);
+        Boolean education = SharedPref.getBoolean(context, SharedPref.EDUCATION);
+        Boolean health = SharedPref.getBoolean(context, SharedPref.HEALTH);
+        String newsDesk = SharedPref.createNewsDeskString(art, fashion, sports, education, health);
         Map<String, String> params = new HashMap<>();
         if (newsDeskBoolean) {
-            params.put("fq", newsDesk);
+            params.put(RetrofitClient.NEWSDESK_PARAMETER, newsDesk);
         }
         params.put(RetrofitClient.API_KEY, RetrofitClient.API_KEY_VALUE);
-        params.put("page", page + "");
+        params.put(RetrofitClient.PAGINATION_PARAMETER, page + "");
         if (!query.equals("")) {
-            params.put("q", query);
+            params.put(RetrofitClient.QUERY_PARAMETER, query);
         } else {
             searchQuery = "";
         }
-
 
         Call<ResponseBody> call = RetrofitClient.getInstance().getApiInterface().getSearchResultsWithFilter(params);
         showProgressBar();
@@ -253,12 +234,11 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 hideProgressBar();
-                Log.d("DEBUG", response.toString());
-                if(response.code() == 429) {
+                if (response.code() == RetrofitClient.ERROR_CODE_TOO_MANY_REQUESTS) {
                     Snackbar.make(newsRecyclerView, R.string.error_429, Snackbar.LENGTH_LONG).show();
                 } else if (response.body() != null) {
 
-                    if (response.body().getStatus().equals("OK")) {
+                    if (response.body().getStatus().equals(RetrofitClient.OK_STATUS)) {
                         List<Article> responseArticles = response.body().getResponse().getArticles();
                         if (responseArticles.size() == 0 && page == 0) {
                             Snackbar.make(newsRecyclerView, R.string.no_results, Snackbar.LENGTH_LONG).show();
@@ -277,6 +257,7 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
         });
     }
 
+
     private void showProgressBar() {
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -288,8 +269,7 @@ public class NewsSearchFragment extends Fragment implements FilterFragment.Filte
     @Override
     public void onSubmit() {
         articles.clear();
-        retroNetworkCall("",0);
-
+        retroNetworkCall("", 0);
     }
 
 }

@@ -12,6 +12,11 @@ public class RetrofitClient {
     public static final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
     public static final String API_KEY = "api-key";
     public static final String API_KEY_VALUE = "d31fe793adf546658bd67e2b6a7fd11a";
+    public static final String NEWSDESK_PARAMETER = "fq";
+    public static final String QUERY_PARAMETER = "q";
+    public static final String PAGINATION_PARAMETER = "page";
+    public static final String OK_STATUS = "OK";
+    public static final int ERROR_CODE_TOO_MANY_REQUESTS = 429;
 
     // Keep your services here, build them in buildRetrofit method later
     private ApiInterface apiInterface;
