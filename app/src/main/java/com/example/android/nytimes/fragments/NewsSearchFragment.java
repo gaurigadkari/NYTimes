@@ -1,11 +1,13 @@
 package com.example.android.nytimes.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -21,15 +23,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.android.nytimes.R;
 import com.example.android.nytimes.adapters.ArticleAdapter;
+import com.example.android.nytimes.databinding.FragmentNewsSearchBinding;
 import com.example.android.nytimes.models.Article;
 import com.example.android.nytimes.models.ResponseBody;
 import com.example.android.nytimes.network.ApiInterface;
-import com.example.android.nytimes.R;
 import com.example.android.nytimes.utils.Constants;
 import com.example.android.nytimes.utils.EndlessRecyclerViewScrollListener;
 import com.example.android.nytimes.utils.Utilities;
-import com.example.android.nytimes.databinding.FragmentNewsSearchBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public class NewsSearchFragment extends Fragment {
+public class NewsSearchFragment extends Fragment implements FilterFragment.FilterSubmit{
     private FragmentNewsSearchBinding binding;
     private String searchQuery;
     private Context context;
@@ -56,6 +58,7 @@ public class NewsSearchFragment extends Fragment {
     private Toolbar toolbar;
     private final int GRID_LAYOUT = 0, LIST_LAYOUT = 1;
     private int currentLayoutType = GRID_LAYOUT;
+    private final String FRAGMENT_FILTER_TAG = "Filters";
     public NewsSearchFragment() {
     }
 
@@ -87,7 +90,6 @@ public class NewsSearchFragment extends Fragment {
             newsRecyclerView = binding.newsList;
             progressBar = binding.progressBar;
             articles = new ArrayList<>();
-            //
             setLayoutManager(GRID_LAYOUT);
 
             newsRecyclerView.addOnScrollListener(scrollListener);
@@ -154,7 +156,12 @@ public class NewsSearchFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.listView:
+            case R.id.action_filter:
+                FragmentManager fm = getChildFragmentManager();
+                FilterFragment filterFragment = new FilterFragment();
+                filterFragment.show(fm, FRAGMENT_FILTER_TAG);
+                break;
+            case R.id.action_list:
                 if(currentLayoutType == GRID_LAYOUT) {
                     setLayoutManager(LIST_LAYOUT);
                     item.setIcon(R.drawable.ic_view_module_white_48px);
@@ -202,14 +209,40 @@ public class NewsSearchFragment extends Fragment {
     }
 
     public void retroNetworkCall(String query, final int page) {
+//        final String BASE_URL = "https://api.nytimes.com/svc/search/v2/";
+        SharedPreferences sharedPreferences = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        Boolean newsDeskBoolean = sharedPreferences.getBoolean("newsDeskBoolean", false);
+        Boolean art = sharedPreferences.getBoolean("art", false);
+        Boolean fashion = sharedPreferences.getBoolean("fashion", false);
+        Boolean sports = sharedPreferences.getBoolean("sports", false);
+        Boolean education = sharedPreferences.getBoolean("education", false);
+        Boolean health = sharedPreferences.getBoolean("health", false);
+        String newsDesk = "news_desk:(";
+        if (art) {
+            newsDesk = newsDesk + "\"Art\" ";
+        }
+        if (fashion) {
+            newsDesk = newsDesk + "\"Fashion\" ";
+        }
+        if (sports) {
+            newsDesk = newsDesk + "\"Sports\" ";
+        }
+        if (education){
+            newsDesk = newsDesk + "\"Education\" ";
+        }
+        if (health){
+            newsDesk = newsDesk + "\"Health\" ";
+        }
+        newsDesk = newsDesk + ")";
+        String sortString;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         Map<String, String> params = new HashMap<>();
-//        if (newsDeskBoolean) {
-//            params.put("fq", newsDesk);
-//        }
+        if (newsDeskBoolean) {
+            params.put("fq", newsDesk);
+        }
         params.put("api-key", "d31fe793adf546658bd67e2b6a7fd11a");
         params.put("page", page + "");
         if (!query.equals("")) {
@@ -217,10 +250,6 @@ public class NewsSearchFragment extends Fragment {
         } else {
             searchQuery = "";
         }
-        //params.put("sort", sortString);
-//        if (date != "") {
-//            params.put("begin_date", date);
-//        }
 
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
         Call<ResponseBody> call = apiInterface.getSearchResultsWithFilter(params);
@@ -236,7 +265,9 @@ public class NewsSearchFragment extends Fragment {
 
                     if (response.body().getStatus().equals("OK")) {
                         List<Article> responseArticles = response.body().getResponse().getArticles();
-                        if (responseArticles.size() != 0) {
+                        if (responseArticles.size() == 0 && page == 0) {
+                            Snackbar.make(newsRecyclerView, R.string.no_results, Snackbar.LENGTH_LONG).show();
+                        } else if (responseArticles.size() != 0) {
                             articles.addAll(responseArticles);
                             adapter.notifyDataSetChanged();
                         }
@@ -257,6 +288,13 @@ public class NewsSearchFragment extends Fragment {
 
     private void hideProgressBar() {
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onSubmit() {
+        articles.clear();
+        retroNetworkCall("",0);
+
     }
 
 }

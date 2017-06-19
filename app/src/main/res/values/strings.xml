@@ -10,7 +10,17 @@
     <string name="home">Home</string>
     <string name="financial">Financial</string>
     <string name="technology">Technology</string>
-    <string name="sports">Sports</string>
     <string name="foreign">Foreign</string>
     <string name="politics">Politics</string>
+    <string name="art">Art</string>
+    <string name="fashion_and_Style">Fashion &amp; Style</string>
+    <string name="sports">Sports</string>
+    <string name="education">Education</string>
+    <string name="health">Health</string>
+    <string name="no_results">No more results found</string>
+    <string name="save">Save</string>
+    <string-array name="sortOrder">
+        <item>Newest</item>
+        <item>Oldest</item>
+    </string-array>
 </resources>

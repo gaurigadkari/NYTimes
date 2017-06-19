@@ -135,7 +135,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                } catch (ParseException e) {
 //                    e.printStackTrace();
 //                }
-                if (!currentArticle.getTag().equals("")) {
+                if (currentArticle.getTag() != null && !currentArticle.getTag().equals("")) {
                     holderNoImage.tag.setText(currentArticle.getTag());
                 } else {
                     holderNoImage.tag.setText(R.string.misc);
@@ -154,7 +154,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
 
     public static class ArticleViewHolder extends RecyclerView.ViewHolder {
-        protected TextView headline, snippet, date, tag;
+        protected TextView headline, snippet, tag;
         protected ImageView thumbNail;
 
         public ArticleViewHolder(View itemView) {
@@ -162,19 +162,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             headline = (TextView) itemView.findViewById(R.id.headline);
             thumbNail = (ImageView) itemView.findViewById(R.id.thumbnail);
             snippet = (TextView) itemView.findViewById(R.id.snippet);
-            date = (TextView) itemView.findViewById(R.id.date);
             tag = (TextView) itemView.findViewById(R.id.tag);
         }
     }
 
     public static class ArticleNoImageViewHolder extends RecyclerView.ViewHolder {
-        protected TextView headline, snippet, date, tag;
+        protected TextView headline, snippet, tag;
 
         public ArticleNoImageViewHolder(View itemView) {
             super(itemView);
             headline = (TextView) itemView.findViewById(R.id.headline);
             snippet = (TextView) itemView.findViewById(R.id.snippet);
-            date = (TextView) itemView.findViewById(R.id.date);
             tag = (TextView) itemView.findViewById(R.id.tag);
 
 
